@@ -276,7 +276,7 @@ public class Display implements ActionListener {
 
 
     private void loadSequential(boolean next){
-        Config config = null;
+        Config config;
         config = new Config();
 
         String path = config.getFilePath();

@@ -2,4 +2,4 @@
 Journal pages location:
 filepath = ".\\entries\\"
 
-fontsize = 25
+fontsize = 30
