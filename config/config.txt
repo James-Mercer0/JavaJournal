@@ -1,0 +1,5 @@
+
+Journal pages location:
+filepath = ".\\entries\\"
+
+fontsize = 25
