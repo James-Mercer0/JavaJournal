@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.io.*;
 
 public class Config {
@@ -7,7 +8,11 @@ public class Config {
     String contents;
 
     public void readConfigFilepath() {
-
+        try {
+            setUpConfig();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         try(BufferedReader br = new BufferedReader(new FileReader("config/config.txt"))) {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -26,8 +31,12 @@ public class Config {
         }
     }
 
-    public void readConfigFontsize() {
-
+    public void readConfigFontsize(){
+        try {
+            setUpConfig();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         try(BufferedReader br = new BufferedReader(new FileReader("config/config.txt"))) {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -47,11 +56,21 @@ public class Config {
     }
 
     public int getFontSize() {
+        try {
+            setUpConfig();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         readConfigFontsize();
         return Integer.parseInt(fontSize);
     }
 
     public void setFontSize(int newSize) {
+        try {
+            setUpConfig();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         try (BufferedReader br = new BufferedReader(new FileReader("config/config.txt"))) {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -74,13 +93,49 @@ public class Config {
             throw new RuntimeException(e);
         }
     }
-//    public Config() throws FileNotFoundException {
-//    }
 
     public String getFilePath() {
+        try {
+            setUpConfig();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
         readConfigFilepath();
         return filePath;
     }
 
+    /**
+     * setUpConfig - Check for config file. If not found, create new folder/config file.
+     */
+    public void setUpConfig() throws FileNotFoundException {
 
+        try (FileReader configFile = new FileReader("config/config.txt")) {
+            //Config exists
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Config file or folder not found - creating new Config");
+            File dir = new File("config/");
+            if(!dir.exists()) {
+                if(dir.mkdir())
+                {
+                    JOptionPane.showMessageDialog(null, "New Folder created! Saving new config!");
+                } else {
+                    JOptionPane.showMessageDialog(null, "error - unable to create folder! " + e.getMessage());
+                }
+            }
+
+            FileWriter fw;
+            try {
+                fw = new FileWriter("config/config.txt");
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            try (BufferedWriter bw = new BufferedWriter(fw)) {
+                String defaultConfig = "\nJournal pages location:\nfilepath = `.\\entries\\'\n\nfontsize = 25";
+                bw.write(defaultConfig);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            }
+
+    }
 }

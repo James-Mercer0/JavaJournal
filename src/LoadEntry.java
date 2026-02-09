@@ -62,11 +62,13 @@ public class LoadEntry {
             display.pageLabel.setText("Page " + page);
             display.date.setText(afterFirstSeparator.substring(0,afterFirstSeparator.indexOf("||")));
             display.textArea.setText(afterSecondSeparator);
+            display.textArea.setCaretPosition(0);
             menuFrame.dispose();
         } else {
             existingDisplay.pageLabel.setText("Page " + page);
             existingDisplay.date.setText(afterFirstSeparator.substring(0,afterFirstSeparator.indexOf("||")));
             existingDisplay.textArea.setText(afterSecondSeparator);
+            existingDisplay.textArea.setCaretPosition(0);
         }
     }
 }

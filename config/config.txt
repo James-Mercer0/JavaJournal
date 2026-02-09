@@ -1,5 +1,5 @@
 
 Journal pages location:
-filepath = ".\\entries\\"
+filepath = `.\entries\'
 
-fontsize = 30
+fontsize = 25
