@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicScrollBarUI;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -26,7 +27,15 @@ public class Display implements ActionListener {
     JTextArea textArea;
     JScrollPane scroll;
 
+    Color bgColor;
+    Color fgColor;
+    Color panelColor;
+    Color textAreaColor;
+    Color textCaretColor;
+
     public Display(int pageNumber, String pageDate) {
+
+        setColors();
 
         Config config = new Config();
         fontSize = config.getFontSize();
@@ -55,49 +64,49 @@ public class Display implements ActionListener {
 
         prevBtn.setContentAreaFilled(false);
         prevBtn.setOpaque(true);
-        prevBtn.setBackground(new Color(61, 61, 80));
-        prevBtn.setForeground(new Color(241, 237, 237));
+        prevBtn.setBackground(bgColor);
+        prevBtn.setForeground(fgColor);
 
         nextBtn.setContentAreaFilled(false);
         nextBtn.setOpaque(true);
-        nextBtn.setBackground(new Color(61, 61, 80));
-        nextBtn.setForeground(new Color(241, 237, 237));
+        nextBtn.setBackground(bgColor);
+        nextBtn.setForeground(fgColor);
 
         saveBtn.setContentAreaFilled(false);
         saveBtn.setOpaque(true);
-        saveBtn.setBackground(new Color(61, 61, 80));
-        saveBtn.setForeground(new Color(241, 237, 237));
+        saveBtn.setBackground(bgColor);
+        saveBtn.setForeground(fgColor);
 
         loadBtn.setContentAreaFilled(false);
         loadBtn.setOpaque(true);
-        loadBtn.setBackground(new Color(61, 61, 80));
-        loadBtn.setForeground(new Color(241, 237, 237));
+        loadBtn.setBackground(bgColor);
+        loadBtn.setForeground(fgColor);
 
         mainMenuBtn.setContentAreaFilled(false);
         mainMenuBtn.setOpaque(true);
-        mainMenuBtn.setBackground(new Color(61, 61, 80));
-        mainMenuBtn.setForeground(new Color(241, 237, 237));
+        mainMenuBtn.setBackground(bgColor);
+        mainMenuBtn.setForeground(fgColor);
 
         fontPlusBtn.setContentAreaFilled(false);
         fontPlusBtn.setOpaque(true);
-        fontPlusBtn.setBackground(new Color(61, 61, 80));
-        fontPlusBtn.setForeground(new Color(241, 237, 237));
+        fontPlusBtn.setBackground(bgColor);
+        fontPlusBtn.setForeground(fgColor);
         fontPlusBtn.setPreferredSize(new Dimension(45, 40));
         fontPlusBtn.setFont(new Font("Times New Roman", Font.BOLD, 18));
 
         fontMinusBtn.setContentAreaFilled(false);
         fontMinusBtn.setOpaque(true);
-        fontMinusBtn.setBackground(new Color(61, 61, 80));
-        fontMinusBtn.setForeground(new Color(241, 237, 237));
+        fontMinusBtn.setBackground(bgColor);
+        fontMinusBtn.setForeground(fgColor);
         fontMinusBtn.setPreferredSize(new Dimension(45, 40));
         fontMinusBtn.setFont(new Font("Times New Roman", Font.BOLD, 20));
 
         pageLabel = new JLabel("Page "+pageNumber,SwingConstants.LEFT);
-        pageLabel.setForeground(new Color(241, 237, 237));
+        pageLabel.setForeground(fgColor);
         pageLabel.setVerticalAlignment(SwingConstants.NORTH);
 
         date = new JLabel(pageDate);
-        date.setForeground(new Color(241, 237, 237));
+        date.setForeground(fgColor);
         date.setHorizontalAlignment(SwingConstants.CENTER);
         date.setFont(new Font("Arial", Font.BOLD, 22));
 
@@ -125,15 +134,15 @@ public class Display implements ActionListener {
         btnPanel.add(loadBtn);
         btnPanel.add(mainMenuBtn);
 
-        panel.setBackground(new Color(42, 42, 57));
-        centerPanel.setBackground(new Color(42, 42, 57));
-        btnPanel.setBackground(new Color(42, 42, 57));
+        panel.setBackground(panelColor);
+        centerPanel.setBackground(panelColor);
+        btnPanel.setBackground(panelColor);
 
         textArea = new JTextArea();
-        textArea.setBackground(new Color(48, 48, 60));
-        textArea.setForeground(new Color(241, 237, 237));
+        textArea.setBackground(textAreaColor);
+        textArea.setForeground(fgColor);
         textArea.setFont(new Font("Arial", Font.PLAIN, fontSize));
-        textArea.setCaretColor(Color.WHITE);
+        textArea.setCaretColor(textCaretColor);
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
         textArea.setMargin(new Insets(10,10,10,10));
@@ -143,15 +152,26 @@ public class Display implements ActionListener {
         scroll = new JScrollPane(textArea);
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
+        scroll.getVerticalScrollBar().setBackground(panelColor);
+
+        JScrollBar vBar = scroll.getVerticalScrollBar();
+
+        vBar.setUI(new BasicScrollBarUI() {
+            @Override
+            protected void configureScrollBarColors(){
+                this.thumbColor = bgColor;
+            }
+        });
+
         panel.setBorder(BorderFactory.createEmptyBorder(10,30,10,30));
         panel.setLayout(new GridLayout(0, 1));
 
-        fontPanel.setBackground(new Color(42, 42, 57));
+        fontPanel.setBackground(panelColor);
         fontPanel.setPreferredSize(new Dimension(60,0));
         fontPanel.add(fontPlusBtn);
         fontPanel.add(fontMinusBtn);
 
-        blankPanel.setBackground(new Color(42, 42, 57));
+        blankPanel.setBackground(panelColor);
         blankPanel.setPreferredSize(new Dimension(60,0));
 
         centerPanel.setLayout(new BorderLayout());
@@ -175,7 +195,6 @@ public class Display implements ActionListener {
 
         scroll.setBounds(centerPanel.getWidth()/4,20,centerPanel.getWidth()/2,centerPanel.getHeight()-50);
         scroll.setPreferredSize(new Dimension(centerPanel.getWidth()/2,centerPanel.getHeight()/2));
-
 
         ImageIcon logo = new ImageIcon("imgs/Journal.png");
         frame.setIconImage(logo.getImage());
@@ -243,6 +262,65 @@ public class Display implements ActionListener {
 
             }
         });
+    }
+
+    private void setColors(){
+        Config config = new Config();
+
+        String theme = config.getTheme();
+
+        switch(theme) {
+            case "Light":
+                bgColor = new Color(203, 203, 232);
+                fgColor = new Color(41, 40, 40);
+                panelColor = new Color(212, 212, 225);
+                textAreaColor = new Color(221, 222, 230);
+                textCaretColor = Color.BLACK;
+                break;
+            case "Pastel":
+                bgColor = new Color(243, 239, 195);
+                fgColor = new Color(60, 64, 71);
+                panelColor = new Color(201, 201, 248);
+                textAreaColor = new Color(194, 200, 239);
+                textCaretColor = Color.BLACK;
+                break;
+            case "Pink":
+                bgColor = new Color(246, 128, 237);
+                fgColor = new Color(86, 27, 87);
+                panelColor = new Color(237, 160, 217);
+                textAreaColor = new Color(244, 189, 242);
+                textCaretColor = Color.BLACK;
+                break;
+            case "Sim":
+                bgColor = new Color(20, 58, 67);
+                fgColor = new Color(13, 201, 225);
+                panelColor = new Color(30, 31, 32);
+                textAreaColor = new Color(18, 47, 60);
+                textCaretColor = Color.WHITE;
+                break;
+            case "Matrix":
+                bgColor = new Color(1, 23, 1);
+                fgColor = new Color(29, 159, 1);
+                panelColor = new Color(9, 16, 9);
+                textAreaColor = new Color(17, 30, 17);
+                textCaretColor = Color.WHITE;
+                break;
+            case "Midnight":
+                bgColor = new Color(20, 20, 30);
+                fgColor = new Color(177, 177, 184);
+                panelColor = new Color(0, 0, 0);
+                textAreaColor = new Color(5, 5, 5);
+
+                textCaretColor = Color.WHITE;
+                break;
+            default:
+                bgColor = new Color(61, 61, 80);
+                fgColor = new Color(241, 237, 237);
+                panelColor = new Color(42, 42, 57);
+                textAreaColor = new Color(48, 48, 60);
+                textCaretColor = Color.WHITE;
+                break;
+        }
     }
 
     private boolean saveConfirmation(){

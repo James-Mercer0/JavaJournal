@@ -1,5 +1,8 @@
 import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicComboBoxUI;
+import javax.swing.plaf.basic.BasicComboPopup;
+import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,8 +19,58 @@ public class MainMenu implements ActionListener {
     JButton loadExisting;
     JButton newEntry;
     JButton exitBtn;
+    JButton settingsBtn;
+    JFrame settingsFrame;
+    JPanel settingsPanel;
+
+    Color bgColor;
+    Color fgColor;
+    Color panelColor;
 
     public MainMenu(){
+
+        Config config = new Config();
+
+        String theme = config.getTheme();
+
+        switch(theme) {
+            case "Light":
+                bgColor = new Color(203, 203, 232);
+                fgColor = new Color(41, 40, 40);
+                panelColor = new Color(212, 212, 225);
+                break;
+            case "Pastel":
+                bgColor = new Color(243, 239, 195);
+                fgColor = new Color(60, 64, 71);
+                panelColor = new Color(201, 201, 248);
+                break;
+            case "Pink":
+                bgColor = new Color(246, 128, 237);
+                fgColor = new Color(86, 27, 87);
+                panelColor = new Color(237, 160, 217);
+                break;
+            case "Sim":
+                bgColor = new Color(20, 58, 67);
+                fgColor = new Color(13, 201, 225);
+                panelColor = new Color(30, 31, 32);
+                break;
+            case "Matrix":
+                bgColor = new Color(1, 23, 1);
+                fgColor = new Color(29, 159, 1);
+                panelColor = new Color(9, 16, 9);
+                break;
+            case "Midnight":
+                bgColor = new Color(20, 20, 21);
+                fgColor = new Color(177, 177, 184);
+                panelColor = new Color(0, 0, 0);
+                break;
+            default:
+                bgColor = new Color(61, 61, 80);
+                fgColor = new Color(241, 237, 237);
+                panelColor = new Color(42, 42, 57);
+                break;
+        }
+
         menuFrame = new JFrame();
         menuFrame.setLayout(new BorderLayout());
         menuFrame.setSize(1920,1080);
@@ -27,18 +80,18 @@ public class MainMenu implements ActionListener {
 
         welcomePanel = new JPanel();
         welcomePanel.setLayout(new GridLayout(1, 1));
-        welcomePanel.setBackground(new Color(42, 42, 51));
+        welcomePanel.setBackground(panelColor);
         welcomePanel.setBounds(0, 0, 1920, 980);
 
         welcomeLabel = new JLabel("Journal_2K");
-        welcomeLabel.setForeground(new Color(241, 237, 237));
+        welcomeLabel.setForeground(fgColor);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 89));
         welcomeLabel.setHorizontalAlignment(JLabel.CENTER);
         welcomePanel.add(welcomeLabel);
 
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
-        buttonPanel.setBackground(new Color(62, 62, 73));
+        buttonPanel.setBackground(panelColor);
         buttonPanel.setBounds(0, 980, 1920, 100);
 
         Dimension btnDimension = new Dimension(120, 50);
@@ -47,30 +100,39 @@ public class MainMenu implements ActionListener {
         loadExisting.setPreferredSize(btnDimension);
         loadExisting.setContentAreaFilled(false);
         loadExisting.setOpaque(true);
-        loadExisting.setBackground(new Color(61, 61, 80));
-        loadExisting.setForeground(new Color(241, 237, 237));
+        loadExisting.setBackground(bgColor);
+        loadExisting.setForeground(fgColor);
 
         newEntry = new JButton("New Entry");
         newEntry.setPreferredSize(btnDimension);
         newEntry.setContentAreaFilled(false);
         newEntry.setOpaque(true);
-        newEntry.setBackground(new Color(61, 61, 80));
-        newEntry.setForeground(new Color(241, 237, 237));
+        newEntry.setBackground(bgColor);
+        newEntry.setForeground(fgColor);
 
         exitBtn = new JButton("Exit");
         exitBtn.setPreferredSize(btnDimension);
         exitBtn.setContentAreaFilled(false);
         exitBtn.setOpaque(true);
-        exitBtn.setBackground(new Color(61, 61, 80));
-        exitBtn.setForeground(new Color(241, 237, 237));
+        exitBtn.setBackground(bgColor);
+        exitBtn.setForeground(fgColor);
+
+        settingsBtn = new JButton("Settings");
+        settingsBtn.setPreferredSize(btnDimension);
+        settingsBtn.setContentAreaFilled(false);
+        settingsBtn.setOpaque(true);
+        settingsBtn.setBackground(bgColor);
+        settingsBtn.setForeground(fgColor);
 
         loadExisting.addActionListener(this);
         newEntry.addActionListener(this);
         exitBtn.addActionListener(this);
+        settingsBtn.addActionListener(this);
 
         buttonPanel.add(loadExisting);
         buttonPanel.add(newEntry);
         buttonPanel.add(exitBtn);
+        buttonPanel.add(settingsBtn);
 
         menuFrame.add(welcomePanel, BorderLayout.CENTER);
         menuFrame.add(buttonPanel, BorderLayout.SOUTH);
@@ -92,17 +154,96 @@ public class MainMenu implements ActionListener {
     JDateChooser dateChooser;
     JFrame newEntryFrame;
     JPanel newEntryPanel;
-
+    ImageIcon logo = new ImageIcon("imgs/Journal.png");
+    JComboBox<String> themeComboBox;
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == settingsBtn){
+            settingsFrame = new JFrame("Settings");
+            settingsFrame.setLayout(new BorderLayout());
+            settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            settingsFrame.setSize(450,400);
+            settingsFrame.setIconImage(logo.getImage());
+            settingsFrame.setResizable(false);
+            settingsFrame.setLocationRelativeTo(null);
+
+            settingsPanel = new JPanel();
+            settingsPanel.setBackground(panelColor);
+
+            settingsPanel.setLayout(new GridLayout(0, 2));
+
+            JLabel fontSizeL  = new JLabel("Font Size:");
+            fontSizeL.setHorizontalAlignment(JLabel.CENTER);
+            fontSizeL.setForeground(fgColor);
+
+            JTextField fontSizeInput = new JTextField();
+            fontSizeInput.setMargin(new Insets(55, 40, 55, 40));
+            fontSizeInput.setBorder(BorderFactory.createLineBorder(panelColor,50));
+            fontSizeInput.setBackground(bgColor);
+            fontSizeInput.setForeground(fgColor);
+            Config config = new Config();
+            int configSize = config.getFontSize();
+            fontSizeInput.setText(Integer.toString(configSize));
+
+            JLabel themeLabel = new JLabel("Theme:");
+            themeLabel.setHorizontalAlignment(JLabel.CENTER);
+            themeLabel.setForeground(fgColor);
+
+            String[] themes = {"Dark", "Light", "Pastel", "Pink", "Sim", "Matrix", "Midnight" };
+
+            themeComboBox = new JComboBox<String>(themes);
+
+            themeComboBox.setSelectedItem(config.getTheme());
+            themeComboBox.setBorder(BorderFactory.createLineBorder(panelColor, 60));
+
+
+            themeComboBox.setUI(new BasicComboBoxUI() {
+
+                //Align dropdown with the JComboBox
+                @Override
+                protected ComboPopup createPopup() {
+                    @SuppressWarnings("rawtypes")
+                    BasicComboPopup popup = new BasicComboPopup((JComboBox) themeComboBox) {
+                        //Offset popup to align with JComboBox with border added
+                        @Override
+                        protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
+
+                            int borderOffset = Integer.parseInt(String.valueOf(themeComboBox.getBorder().getBorderInsets(themeComboBox).top));
+
+                            return super.computePopupBounds(px + borderOffset, py - borderOffset, pw - (2*borderOffset), ph);
+                        }
+                    };
+                    return popup;
+                }
+            });
+
+
+            settingsPanel.add(fontSizeL);
+            settingsPanel.add(fontSizeInput);
+            settingsPanel.add(themeLabel);
+            settingsPanel.add(themeComboBox);
+
+            JPanel savePanel = new JPanel();
+            savePanel.setBackground(panelColor);
+
+            JButton saveBtn = new JButton("Save Settings");
+            saveBtn.setBackground(bgColor);
+            saveBtn.setForeground(fgColor);
+
+            savePanel.add(saveBtn);
+
+            settingsFrame.add(settingsPanel, BorderLayout.CENTER);
+            settingsFrame.add(savePanel, BorderLayout.SOUTH);
+            settingsFrame.setVisible(true);
+        }
+
         if(e.getSource() == exitBtn){
             System.exit(0);
         }
         if(e.getSource() == newEntry){
 
             newEntryFrame = new JFrame("New Entry");
-            ImageIcon logo = new ImageIcon("imgs/Journal.png");
             newEntryFrame.setIconImage(logo.getImage());
             newEntryFrame.setLayout(new GridLayout(1, 1));
             newEntryFrame.setSize(500,500);
@@ -111,26 +252,26 @@ public class MainMenu implements ActionListener {
             newEntryPanel = new JPanel();
             newEntryPanel.setLayout(new BorderLayout());
             newEntryPanel.setBorder(BorderFactory.createEmptyBorder(25,40,45,40));
-            newEntryPanel.setBackground(new Color(61, 61, 80));
+            newEntryPanel.setBackground(panelColor);
 
             JLabel newEntryLabel = new JLabel("Please select the date for the entry.");
             newEntryLabel.setHorizontalAlignment(JLabel.CENTER);
-            newEntryLabel.setForeground(new Color(241, 237, 237));
+            newEntryLabel.setForeground(fgColor);
             newEntryLabel.setFont(new Font("Arial", Font.BOLD, 22));
 
             dateChooser = new JDateChooser();
-            dateChooser.setBorder(BorderFactory.createLineBorder(new Color(61, 61, 80),140));
+            dateChooser.setBorder(BorderFactory.createLineBorder(bgColor,140));
 
             dateChooser.setDateFormatString("yyyy-MM-dd");
-            dateChooser.setBackground(new Color(61, 61, 80));
+            dateChooser.setBackground(bgColor);
             dateChooser.setToolTipText("Enter Date - YYYY-MM-DD");
-            dateChooser.getCalendarButton().setBackground(new Color(61, 61, 80));
+            dateChooser.getCalendarButton().setBackground(bgColor);
 
 
 
             confirm = new JButton("Confirm");
-            confirm.setBackground(new Color(61, 61, 80));
-            confirm.setForeground(new Color(241, 237, 237));
+            confirm.setBackground(bgColor);
+            confirm.setForeground(fgColor);
             confirm.setContentAreaFilled(false);
             confirm.setOpaque(true);
             confirm.setPreferredSize(new Dimension(70, 50));

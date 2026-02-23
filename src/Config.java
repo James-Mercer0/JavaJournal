@@ -104,6 +104,32 @@ public class Config {
         return filePath;
     }
 
+    public String getTheme(){
+        String theme;
+
+        try {
+            setUpConfig();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        try (BufferedReader br = new BufferedReader(new FileReader("config/config.txt"))){
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+            while (line != null) {
+                if (line.contains("theme = ")) {
+                    sb.append(line);
+                }
+                line = br.readLine();
+            }
+            theme =  sb.toString();
+            theme = theme.substring(8);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return theme;
+    }
+
     /**
      * setUpConfig - Check for config file. If not found, create new folder/config file.
      */
@@ -130,7 +156,7 @@ public class Config {
                 throw new RuntimeException(ex);
             }
             try (BufferedWriter bw = new BufferedWriter(fw)) {
-                String defaultConfig = "\nJournal pages location:\nfilepath = `.\\entries\\'\n\nfontsize = 25";
+                String defaultConfig = "\nJournal pages location:\nfilepath = `.\\entries\\'\n\nfontsize = 25\n\ntheme = Dark";
                 bw.write(defaultConfig);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
