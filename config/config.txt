@@ -2,6 +2,6 @@
 Journal pages location:
 filepath = `.\entries\'
 
-fontsize = 26
+fontsize = 21
 
 theme = Midnight

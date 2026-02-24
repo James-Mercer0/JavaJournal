@@ -22,6 +22,7 @@ public class MainMenu implements ActionListener {
     JButton settingsBtn;
     JFrame settingsFrame;
     JPanel settingsPanel;
+    int fontSize;
 
     Color bgColor;
     Color fgColor;
@@ -30,6 +31,13 @@ public class MainMenu implements ActionListener {
     public MainMenu(){
 
         Config config = new Config();
+
+        fontSize = config.getFontSize();
+
+        if(fontSize<=1){
+            fontSize = 1;
+            config.setFontSize(1);
+        }
 
         String theme = config.getTheme();
 

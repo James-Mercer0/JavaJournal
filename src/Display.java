@@ -39,6 +39,10 @@ public class Display implements ActionListener {
 
         Config config = new Config();
         fontSize = config.getFontSize();
+        if(fontSize<=1){
+            fontSize = 1;
+            config.setFontSize(1);
+        }
 
         page = pageNumber;
 
@@ -447,6 +451,10 @@ public class Display implements ActionListener {
         }
 
         if(e.getSource() == fontMinusBtn){
+            if(fontSize<=1){
+                fontSize = 1;
+                return;
+            }
             fontSize--;
             textArea.setFont(new Font("Arial", Font.PLAIN, fontSize));
             Config config = new Config();
