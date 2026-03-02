@@ -314,8 +314,21 @@ public class Display implements ActionListener {
                 fgColor = new Color(177, 177, 184);
                 panelColor = new Color(0, 0, 0);
                 textAreaColor = new Color(5, 5, 5);
-
                 textCaretColor = Color.WHITE;
+                break;
+            case "Monotone":
+                bgColor = new Color(37, 37, 37);
+                fgColor = new Color(223, 223, 223);
+                panelColor = new Color(27, 27, 27);
+                textAreaColor = new Color(53, 53, 53);
+                textCaretColor = new Color(214, 214, 214);
+                break;
+            case "Redngreen":
+                bgColor = new Color(172, 49, 49);
+                fgColor = new Color(41, 214, 116);
+                panelColor = new Color(221, 41, 41);
+                textAreaColor = new Color(189, 46, 46);
+                textCaretColor = new Color(11, 191, 78);
                 break;
             default:
                 bgColor = new Color(61, 61, 80);

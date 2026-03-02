@@ -72,6 +72,16 @@ public class MainMenu implements ActionListener {
                 fgColor = new Color(177, 177, 184);
                 panelColor = new Color(0, 0, 0);
                 break;
+            case "Monotone":
+                bgColor = new Color(37, 37, 37);
+                fgColor = new Color(223, 223, 223);
+                panelColor = new Color(27, 27, 27);
+                break;
+            case "Redngreen":
+                bgColor = new Color(172, 49, 49);
+                fgColor = new Color(45, 179, 87);
+                panelColor = new Color(232, 31, 31);
+                break;
             default:
                 bgColor = new Color(61, 61, 80);
                 fgColor = new Color(241, 237, 237);

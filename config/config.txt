@@ -4,4 +4,4 @@ filepath = `.\entries\'
 
 fontsize = 21
 
-theme = Midnight
+theme = Redngreen
