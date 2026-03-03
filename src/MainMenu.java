@@ -178,6 +178,11 @@ public class MainMenu implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == settingsBtn){
+            //Prevent duplicate Settings windows
+            if(settingsFrame!=null){
+                settingsFrame.dispose();
+            }
+
             settingsFrame = new JFrame("Settings");
             settingsFrame.setLayout(new BorderLayout());
             settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
