@@ -323,7 +323,7 @@ public class Display implements ActionListener {
                 textAreaColor = new Color(53, 53, 53);
                 textCaretColor = new Color(214, 214, 214);
                 break;
-            case "Redngreen":
+            case "RedAndGreen":
                 bgColor = new Color(172, 49, 49);
                 fgColor = new Color(41, 214, 116);
                 panelColor = new Color(221, 41, 41);

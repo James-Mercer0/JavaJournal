@@ -1,3 +1,4 @@
+import com.sun.tools.javac.Main;
 import com.toedter.calendar.JDateChooser;
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxUI;
@@ -6,9 +7,11 @@ import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.Scanner;
 
 public class MainMenu implements ActionListener {
 
@@ -77,7 +80,7 @@ public class MainMenu implements ActionListener {
                 fgColor = new Color(223, 223, 223);
                 panelColor = new Color(27, 27, 27);
                 break;
-            case "Redngreen":
+            case "RedAndGreen":
                 bgColor = new Color(172, 49, 49);
                 fgColor = new Color(45, 179, 87);
                 panelColor = new Color(232, 31, 31);
@@ -174,91 +177,123 @@ public class MainMenu implements ActionListener {
     JPanel newEntryPanel;
     ImageIcon logo = new ImageIcon("imgs/Journal.png");
     JComboBox<String> themeComboBox;
+    JButton saveBtn;
+    JTextField fontSizeInput;
+
+    private void openSettings(){
+        //Prevent duplicate Settings windows
+        if(settingsFrame!=null){
+            settingsFrame.dispose();
+        }
+
+        settingsFrame = new JFrame("Settings");
+        settingsFrame.setLayout(new BorderLayout());
+        settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        settingsFrame.setSize(450,400);
+        settingsFrame.setIconImage(logo.getImage());
+        settingsFrame.setResizable(false);
+        settingsFrame.setLocationRelativeTo(null);
+
+        settingsPanel = new JPanel();
+        settingsPanel.setBackground(panelColor);
+
+        settingsPanel.setLayout(new GridLayout(0, 2));
+
+        JLabel fontSizeL  = new JLabel("Font Size:");
+        fontSizeL.setHorizontalAlignment(JLabel.CENTER);
+        fontSizeL.setForeground(fgColor);
+
+        fontSizeInput = new JTextField();
+        fontSizeInput.setMargin(new Insets(55, 40, 55, 40));
+        fontSizeInput.setBorder(BorderFactory.createLineBorder(panelColor,50));
+        fontSizeInput.setBackground(bgColor);
+        fontSizeInput.setForeground(fgColor);
+        Config config = new Config();
+        int configSize = config.getFontSize();
+        fontSizeInput.setText(Integer.toString(configSize));
+
+        JLabel themeLabel = new JLabel("Theme:");
+        themeLabel.setHorizontalAlignment(JLabel.CENTER);
+        themeLabel.setForeground(fgColor);
+
+        String[] themes = {"Dark", "Light", "Pastel", "Pink", "Sim", "Matrix", "Midnight", "Monotone", "RedAndGreen" };
+
+        themeComboBox = new JComboBox<String>(themes);
+
+        themeComboBox.setSelectedItem(config.getTheme());
+        themeComboBox.setBorder(BorderFactory.createLineBorder(panelColor, 60));
+
+
+        themeComboBox.setUI(new BasicComboBoxUI() {
+
+            //Align dropdown with the JComboBox
+            @Override
+            protected ComboPopup createPopup() {
+                @SuppressWarnings("rawtypes")
+                BasicComboPopup popup = new BasicComboPopup((JComboBox) themeComboBox) {
+                    //Offset popup to align with JComboBox with border added
+                    @Override
+                    protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
+
+                        int borderOffset = Integer.parseInt(String.valueOf(themeComboBox.getBorder().getBorderInsets(themeComboBox).top));
+
+                        return super.computePopupBounds(px + borderOffset, py - borderOffset, pw - (2*borderOffset), ph);
+                    }
+                };
+                return popup;
+            }
+        });
+
+
+        settingsPanel.add(fontSizeL);
+        settingsPanel.add(fontSizeInput);
+        settingsPanel.add(themeLabel);
+        settingsPanel.add(themeComboBox);
+
+        JPanel savePanel = new JPanel();
+        savePanel.setBackground(panelColor);
+
+        saveBtn = new JButton("Save Settings");
+        saveBtn.setBackground(bgColor);
+        saveBtn.setForeground(fgColor);
+
+        savePanel.add(saveBtn);
+
+        saveBtn.addActionListener(this);
+
+        settingsFrame.add(settingsPanel, BorderLayout.CENTER);
+        settingsFrame.add(savePanel, BorderLayout.SOUTH);
+        settingsFrame.setVisible(true);
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == settingsBtn){
-            //Prevent duplicate Settings windows
-            if(settingsFrame!=null){
-                settingsFrame.dispose();
-            }
+            openSettings();
+        }
 
-            settingsFrame = new JFrame("Settings");
-            settingsFrame.setLayout(new BorderLayout());
-            settingsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            settingsFrame.setSize(450,400);
-            settingsFrame.setIconImage(logo.getImage());
-            settingsFrame.setResizable(false);
-            settingsFrame.setLocationRelativeTo(null);
-
-            settingsPanel = new JPanel();
-            settingsPanel.setBackground(panelColor);
-
-            settingsPanel.setLayout(new GridLayout(0, 2));
-
-            JLabel fontSizeL  = new JLabel("Font Size:");
-            fontSizeL.setHorizontalAlignment(JLabel.CENTER);
-            fontSizeL.setForeground(fgColor);
-
-            JTextField fontSizeInput = new JTextField();
-            fontSizeInput.setMargin(new Insets(55, 40, 55, 40));
-            fontSizeInput.setBorder(BorderFactory.createLineBorder(panelColor,50));
-            fontSizeInput.setBackground(bgColor);
-            fontSizeInput.setForeground(fgColor);
+        if(e.getSource() == saveBtn){
             Config config = new Config();
-            int configSize = config.getFontSize();
-            fontSizeInput.setText(Integer.toString(configSize));
-
-            JLabel themeLabel = new JLabel("Theme:");
-            themeLabel.setHorizontalAlignment(JLabel.CENTER);
-            themeLabel.setForeground(fgColor);
-
-            String[] themes = {"Dark", "Light", "Pastel", "Pink", "Sim", "Matrix", "Midnight" };
-
-            themeComboBox = new JComboBox<String>(themes);
-
-            themeComboBox.setSelectedItem(config.getTheme());
-            themeComboBox.setBorder(BorderFactory.createLineBorder(panelColor, 60));
+            String originalTheme = config.getTheme();
+            //On save, get Font Size from Settings text Field (sanitized)
+            String settingFontSizeInput = fontSizeInput.getText();
+            String cleanFSI = settingFontSizeInput.replaceAll("[^0-9]","");
+            int fontSizeInt = Integer.parseInt(cleanFSI);
 
 
-            themeComboBox.setUI(new BasicComboBoxUI() {
+            //On save, get Selected Theme from dropdown
+            String selectedTheme = Objects.requireNonNull(themeComboBox.getSelectedItem()).toString();
 
-                //Align dropdown with the JComboBox
-                @Override
-                protected ComboPopup createPopup() {
-                    @SuppressWarnings("rawtypes")
-                    BasicComboPopup popup = new BasicComboPopup((JComboBox) themeComboBox) {
-                        //Offset popup to align with JComboBox with border added
-                        @Override
-                        protected Rectangle computePopupBounds(int px, int py, int pw, int ph) {
+            //update Config with fontSize and Theme
 
-                            int borderOffset = Integer.parseInt(String.valueOf(themeComboBox.getBorder().getBorderInsets(themeComboBox).top));
-
-                            return super.computePopupBounds(px + borderOffset, py - borderOffset, pw - (2*borderOffset), ph);
-                        }
-                    };
-                    return popup;
-                }
-            });
-
-
-            settingsPanel.add(fontSizeL);
-            settingsPanel.add(fontSizeInput);
-            settingsPanel.add(themeLabel);
-            settingsPanel.add(themeComboBox);
-
-            JPanel savePanel = new JPanel();
-            savePanel.setBackground(panelColor);
-
-            JButton saveBtn = new JButton("Save Settings");
-            saveBtn.setBackground(bgColor);
-            saveBtn.setForeground(fgColor);
-
-            savePanel.add(saveBtn);
-
-            settingsFrame.add(settingsPanel, BorderLayout.CENTER);
-            settingsFrame.add(savePanel, BorderLayout.SOUTH);
-            settingsFrame.setVisible(true);
+            config.setFontSize(fontSizeInt);
+            config.setTheme(selectedTheme);
+            if(!originalTheme.equals(selectedTheme)) {
+                menuFrame.dispose();
+                settingsFrame.dispose();
+                MainMenu mm = new MainMenu();
+                mm.openSettings();
+            }
         }
 
         if(e.getSource() == exitBtn){

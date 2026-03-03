@@ -71,6 +71,7 @@ public class Config {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+
         try (BufferedReader br = new BufferedReader(new FileReader("config/config.txt"))) {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
@@ -128,6 +129,38 @@ public class Config {
             throw new RuntimeException(e);
         }
         return theme;
+    }
+
+    public void setTheme(String newTheme){
+        try {
+            setUpConfig();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        try(BufferedReader br = new BufferedReader(new FileReader("config/config.txt"))) {
+            StringBuilder sb = new StringBuilder();
+            String line = br.readLine();
+            while (line != null) {
+                if (line.contains("theme = ")) {
+                    sb.append("theme = ").append(newTheme);
+                    sb.append(System.lineSeparator());
+                } else {
+                    sb.append(line);
+                    sb.append(System.lineSeparator());
+                }
+                line = br.readLine();
+            }
+            contents = sb.toString();
+
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter("config/config.txt"))) {
+                bw.write(contents);
+            }
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**
